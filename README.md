@@ -10,14 +10,22 @@ Small scripts and sample data to merge phylodb data with Kallisto output or Trin
 1. Create PhyloDB Kallisto index and map reads against the database.
 2. Copy the `abundances.tsv` file from the Kallisto output dir, preferably with a more specific name, to a directory containing `taxonomymatcher.py`. 
 3. Copy the PhyloDB gene and taxonomy annotation tsv files to the same directory.
-4. Run `taxonomymatcher.py` either one at a time or with bash scripting, a simple example where C{number}abundances.tsv represents multiple files with this name pattern of Kallisto output:
+4. Run `taxonomymatcher.py` either one at a time or with bash scripting
  
 ```
-for i in `ls C*abundances.tsv`
-do
+$ python taxonomymatcher.py -h
+usage: taxonomymatcher.py [-h] -i INPUT_FILE -o OUTPUT_FILE -a ANNOTATIONS_FILE -t TAXONOMY_FILE
 
-python taxonomymatcher.py -i ${i} -o ${i}_annotated
-done
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT_FILE, --infile INPUT_FILE
+                        Path to kallisto/salmon pseudocount input file.
+  -o OUTPUT_FILE, --outfile OUTPUT_FILE
+                        Path to write merged taxonomy/annotation file
+  -a ANNOTATIONS_FILE, --annotations ANNOTATIONS_FILE
+                        Path to phylodb annotations text file.
+  -t TAXONOMY_FILE, --taxonomies TAXONOMY_FILE
+                        Path to input phylodb taxonomy file
 ```
 - Note that the script is run with a specified input tsv and a specified output tsv, if these are not given the script will not run.
 
