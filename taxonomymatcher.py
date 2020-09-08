@@ -48,11 +48,11 @@ def data_merger(abundances, gene_database, taxonomy_database):
     Merges data using joins, cleans up unnecessary columns and 0 TPM rows
     '''
 
-    abundances = abundances.merge(gene_database, left_on = abundances["target_id"], right_on = gene_database["gene_id"])
+    abundances = abundances.merge(gene_database, left_on = "target_id", right_on = "gene_id")
     
-    abundances = abundances.merge(taxonomy_database, left_on = abundances["strain_name"], right_on = taxonomy_database["strain_name"])
+    abundances = abundances.merge(taxonomy_database, left_on = "strain_name", right_on = "strain_name")
     
-    abundances = abundances.drop(['strain_name_y', 'idstring', 'gene_id', 'peptide_count'], axis=1)
+    abundances = abundances.drop(['idstring', 'gene_id', 'peptide_count'], axis=1)
 
     #abundances = abundances.drop(abundances[abundances['tpm'] == 0].index) # Can edit in/out depending on if you want to filter
 
