@@ -2,11 +2,31 @@
 
 import pandas as pd 
 import sys, getopt
+import argparse
 
 '''
 Usage: taxonomymatcher.py -i <kallisto_abundance_file.tsv> -o <output.tsv>
 taxonomymatcher.py compiles Kallisto output with PhyloDB taxonomy and annotation databases.
 '''
+
+def parse_arguments():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--infile', metavar="INPUT_FILE",
+                        help='Path to kallisto/salmon pseudocount input file.',
+                        required=True, dest='input_file', type=str)
+    parser.add_argument('-o', '--outfile', metavar="OUTPUT_FILE",
+                        help='Path to write merged taxonomy/annotation file',
+                        required=True, dest='out_file', type=str)
+    parser.add_argument('-a', '--annotations', metavar="ANNOTATIONS_FILE",
+                        help='Path to phylodb annotations text file.',
+                        required=True, dest='annot_file', type=str)  
+    parser.add_argument('-t', '--taxonomies', metavar="TAXONOMY_FILE",
+                        help='Path to input phylodb taxonomy file',
+                        required=True, dest='tax_file', type=str)   
+    args = parser.parse_args()
+
+    return args
 
 def get_databases(kallisto_abundance_file, annotations, taxonomies):
     '''
@@ -23,7 +43,6 @@ def get_databases(kallisto_abundance_file, annotations, taxonomies):
 
     return abundances, gene_database, taxonomy_database
 
-    
 def data_merger(abundances, gene_database, taxonomy_database):
     '''
     Merges data using joins, cleans up unnecessary columns and 0 TPM rows
@@ -42,21 +61,20 @@ def data_merger(abundances, gene_database, taxonomy_database):
 def output_writer(merged_dataframe, outputfile):
     merged_dataframe.to_csv(path_or_buf=outputfile, index=False)
 
-
-def main(argv):
+def main():
     
-    inputfile = sys.argv[1]
-    outputfile = sys.argv[2]
+    user_args = parse_arguments()
+    
+    inputfile = user_args.input_file
+    outputfile = user_args.out_file
+    annot_file = user_args.annot_file
+    tax_file = user_args.tax_file
         
 
-    abundances, gene_database, taxonomies = get_databases(inputfile, "/proj/marchlab/projects/phylodb_1.076.annotations.txt", "/proj/marchlab/projects/phylodbannotation/phylodb_1.076.taxonomy.txt")
+    abundances, gene_database, taxonomies = get_databases(inputfile, annot_file, tax_file)
 
     merged_table = data_merger(abundances, gene_database, taxonomies)
     output_writer(merged_table, outputfile)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("No input/output files specified. \n Usage: taxonomymatcher.py -i <kallisto_abundance_file.tsv> -o <output.tsv> \n")
-    else:
-
-        main(sys.argv[1:])    
+    main()
